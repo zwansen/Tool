@@ -1,0 +1,14 @@
+# GNSS ToolBox 运行时依赖
+PyQt6>=6.4.0
+PyQt6-WebEngine>=6.4.0
+streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+openpyxl>=3.1.0
+plotly>=5.18.0
+kxpyrtcm>=0.1.0
+tqdm>=4.65.0
+
+# 打包工具（开发依赖）
+pyinstaller>=6.0.0

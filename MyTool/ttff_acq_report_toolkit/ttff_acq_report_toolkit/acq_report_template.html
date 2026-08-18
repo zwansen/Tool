@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTFF 冷启动 CHOBS / 星历 / 参与解算</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>
+// 深色主题：与 TTFF 报告保持一致，避免坐标/图例文字在深色背景上看不清
+if (window.echarts && echarts.registerTheme) {
+  echarts.registerTheme('bpDark', {
+    color: ['#4da3ff', '#2dd4a7', '#f5a623', '#ff6b6b', '#b48cff', '#ff9ff3', '#55efc4'],
+    backgroundColor: 'transparent',
+    textStyle: { color: '#dce4f0' },
+    title: { textStyle: { color: '#dce4f0' } },
+    legend: { textStyle: { color: '#8ba0bd' } },
+    categoryAxis: {
+      axisLine: { lineStyle: { color: '#263349' } },
+      axisTick: { lineStyle: { color: '#263349' } },
+      axisLabel: { color: '#8ba0bd' },
+      splitLine: { lineStyle: { color: '#263349' } }
+    },
+    valueAxis: {
+      axisLine: { lineStyle: { color: '#263349' } },
+      axisTick: { lineStyle: { color: '#263349' } },
+      axisLabel: { color: '#8ba0bd' },
+      splitLine: { lineStyle: { color: 'rgba(38,51,73,.55)' } }
+    },
+    tooltip: { backgroundColor: '#161e2c', borderColor: '#263349', textStyle: { color: '#dce4f0' } }
+  });
+}
+</script>
+<style>
+:root {
+  --bg: #0f1520;
+  --card: #161e2c;
+  --text: #dce4f0;
+  --muted: #8ba0bd;
+  --accent: #2dd4a7;
+  --border: #263349;
+  --chip: rgba(45,212,167,.14);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(160deg, #0f1520 0%, #131b2b 40%, #0f1520 100%);
+  color: var(--text);
+}
+.wrap { max-width: none; width: 100%; margin: 0; padding: 16px 12px 40px; }
+h1 { font-size: 1.6rem; margin: 0 0 6px; letter-spacing: 0.02em; }
+.sub { color: var(--muted); margin-bottom: 20px; font-size: 0.95rem; }
+#meta { margin-bottom: 16px; }
+.meta-table td { font-weight: 600; }
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04); padding: 16px 18px; margin-bottom: 16px;
+}
+.card h2 { margin: 0 0 12px; font-size: 1.1rem; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.tab {
+  border: 1px solid var(--border); background: var(--card); border-radius: 999px;
+  padding: 7px 14px; cursor: pointer; font-size: 0.9rem; color: var(--text);
+}
+.tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.cycle-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px;
+}
+.cycle-bar label { color: var(--muted); font-size: 0.9rem; }
+.cycle-bar select {
+  min-width: 220px; padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 0.95rem; background: var(--card); color: var(--text);
+}
+.chart { width: 100%; height: 480px; }
+.chart-tall { width: 100%; height: 640px; }
+.note { color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin: 0 0 10px; }
+.chip {
+  display: inline-block; background: var(--chip); color: var(--accent);
+  border-radius: 6px; padding: 2px 8px; font-size: 0.8rem; margin-right: 6px;
+}
+.legend-dot {
+  display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+  margin-right: 4px; vertical-align: middle;
+}
+#sat-panel { min-height: 80px; }
+.sat-table-wrap { overflow-x: auto; }
+.sat-table {
+  width: 100%; border-collapse: collapse; font-size: 0.82rem;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.sat-table th, .sat-table td {
+  border: 1px solid var(--border); padding: 5px 8px; text-align: left; vertical-align: top;
+}
+.sat-table th { background: #1b2434; color: var(--muted); font-weight: 650; position: sticky; top: 0; }
+.sat-table td.file { font-weight: 650; min-width: 140px; }
+.sat-table td.total { font-weight: 650; text-align: right; }
+.sat-table td.empty { color: var(--muted); text-align: center; }
+.sat-table .n { color: var(--accent); font-weight: 650; margin-right: 2px; }
+.freq-menu, #sat-freq-filters, #sat-source-toggle, #gantt-bar {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 10px;
+}
+.freq-menu .flt, #sat-freq-filters .flt, #sat-source-toggle .flt, #gantt-bar .flt {
+  border: 1px solid var(--border); background: var(--card); border-radius: 999px;
+  padding: 4px 10px; cursor: pointer; font-size: 0.8rem; color: var(--text);
+}
+.freq-menu .flt.active, #sat-freq-filters .flt.active, #sat-source-toggle .flt.active, #gantt-bar .flt.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.freq-menu .flt-act, #sat-freq-filters .flt-act { color: var(--muted); border-style: dashed; }
+.loading { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>TTFF 冷启动 · CHOBS / 星历 / 参与解算</h1>
+  <div class="sub" id="subtitle"></div>
+
+  <div class="card">
+    <h2>选择</h2>
+    <p class="note" style="margin-bottom:8px;">文件可多选，按同一 Reset 号对齐叠加。曲线数据按文件/次数分包加载。</p>
+    <div class="tabs" id="device-tabs"></div>
+    <div class="cycle-bar">
+      <label for="cycle-select">Reset 号（对齐）</label>
+      <select id="cycle-select"></select>
+      <span class="chip" id="cycle-chip">多文件叠加</span>
+      <span class="loading" id="load-status"></span>
+    </div>
+    <p class="note" style="margin-top:12px;">
+      复位标志 <span class="chip">#Receiver Reset:N,8000013F</span>
+      X 轴一律 <b>相对 Reset 秒</b>（t=0，10Hz），无 UTC。
+      TrackInfo 来自 <span class="chip">ProtocolDecoder.dll</span>（与 workbench 跟踪视图同源）：
+      星历有效=sat_state bit29，参与解算=sat_state bit27，可参与位置解=pvt_state bit31。
+    </p>
+  </div>
+
+  <div id="meta"></div>
+
+  <div class="card">
+    <h2>RawObs 各频点在视星数 vs 时间</h2>
+    <p class="note">下方点选频点即绘制（可多选）；默认 <b>B2b</b>。图例仅区分文件/系列。竖线=首次定位。</p>
+    <div id="rawobs-freq-menu" class="freq-menu"></div>
+    <div id="chart-freq-curve" class="chart"></div>
+  </div>
+
+  <div class="card">
+    <h2>星历有效 / 参与解算 颗数 vs 时间</h2>
+    <p class="note">
+      卫星级 <b>sat_state</b>（ProtocolDecoder.dll）。实线=参与解算，虚线=星历有效。竖线=首次定位。
+    </p>
+    <div id="chart-eph-fix-curve" class="chart"></div>
+  </div>
+
+  <div class="card">
+    <h2>按星时间轴 · 星历有效 / 参与解算</h2>
+    <p class="note">
+      单文件下钻。色带：
+      <span class="legend-dot" style="background:#9ca3af"></span>跟踪
+      <span class="legend-dot" style="background:#eab308"></span>星历有效
+      <span class="legend-dot" style="background:#16a34a"></span>参与解算。
+      X=相对 Reset 秒。默认只显示曾出现 <b>B2b</b> 的星。
+    </p>
+    <div id="gantt-bar"></div>
+    <div id="chart-sat-gantt" class="chart-tall"></div>
+  </div>
+
+  <div class="card">
+    <h2>可参与位置解算 vs 时间（信号级）</h2>
+    <p class="note">信号级 <b>pvt_state &amp; 0x80000000</b>（「可参与」，≠ 参与解算）。下方点选频点即绘制；默认 <b>B2b</b>。</p>
+    <div id="pvt-freq-menu" class="freq-menu"></div>
+    <div id="chart-pvt-curve" class="chart"></div>
+  </div>
+
+  <div class="card">
+    <h2>当前历元 · 卫星列表</h2>
+    <div id="sat-source-toggle" style="margin:0 0 8px"></div>
+    <p class="note" id="sat-time">在曲线上悬停或点击某一时刻，显示该历元卫星/频点列表。</p>
+    <div id="sat-freq-filters"></div>
+    <div id="sat-panel"><div class="loading">等待选择时刻…</div></div>
+  </div>
+
+</div>
+<script src="report_data.js"></script>
+<script src="acq_report.js"></script>
+</body>
+</html>

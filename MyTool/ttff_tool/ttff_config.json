@@ -1,0 +1,52 @@
+{
+  "settings": {
+    "log_dir": "..",
+    "output_html": "TTFF统计报告.html",
+    "output_json": "ttff_results.json",
+    "default_date": "040826"
+  },
+  "files": [
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/LG69T_NMEA.log",
+      "reset_marker": "$PSTMCOLD*1E",
+      "name": "LG69T",
+      "note": ""
+    },
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/A8P-C00631CD40A00042-tongxian-NMEA-1.log",
+      "reset_marker": "$KMDOK,KMDRST,h3F*4C",
+      "name": "A7P-tongxian-1",
+      "note": ""
+    },
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/A8P-C00631CD40A00042-tongxian-NMEA-2.log",
+      "reset_marker": "$KMDOK,KMDRST,h3F*4C",
+      "name": "A8P-tongxian-2",
+      "note": ""
+    },
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/A7P-C00631CD40A00042-tongxian-NMEA-3.log",
+      "reset_marker": "$KMDOK,KMDRST,h3F*4C",
+      "name": "A7P-tongxian-3",
+      "note": ""
+    },
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/A8P-D00311CD49A40469-jinxian-NMEA-1.log",
+      "reset_marker": "$KMDOK,KMDRST,h3F*4C",
+      "name": "A8P-jinxian-1",
+      "note": ""
+    },
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/A8P-23625556000001-jinxian-NMEA-2.log",
+      "reset_marker": "$KMDOK,KMDRST,h3F*4C",
+      "name": "A8P-jinxian-2",
+      "note": ""
+    },
+    {
+      "file": "D:/TestDate/0804/NMEA/TTFF/A7P-D00631CD47A21089-jinxian-NMEA-3.log",
+      "reset_marker": "$KMDOK,KMDRST,h3F*4C",
+      "name": "A7P-jinxian-3",
+      "note": ""
+    }
+  ]
+}

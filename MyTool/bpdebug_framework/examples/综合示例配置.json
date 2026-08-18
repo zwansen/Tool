@@ -1,0 +1,28 @@
+{
+  "title": "BPDEBUG 综合数据分析（示例）",
+  "files": [
+    {"path": "testdata/recv1.txt", "name": "接收机A", "note": "常温"},
+    {"path": "testdata/recv2.txt", "name": "接收机B", "note": "RTK"}
+  ],
+  "fields": [
+    {"stmt": "$CNRCV", "index": 10, "name": "flashclkdrifft", "parser": "bare"},
+    {"stmt": "$CNRCV", "index": 11, "name": "curclkdrifft", "parser": "bare"},
+    {"stmt": "$CNRCV", "index": 12, "name": "recvclkdrifft", "parser": "bare"},
+    {"stmt": "$GNGGA", "index": 7, "name": "sv_in_use", "parser": "int"},
+    {"stmt": "$GNGGA", "index": 6, "name": "fix_quality", "parser": "int"},
+    {"stmt": "$GPGSV", "index": 3, "name": "gsv_total", "parser": "int"},
+    {"stmt": "$GNGGA", "index": 0, "name": "gga_count", "parser": "raw", "take": "count"}
+  ],
+  "charts": [
+    {"type": "line", "fields": ["curclkdrifft"], "title": "当前钟漂随时间变化", "y_name": "curclkdrifft"},
+    {"type": "line", "fields": ["sv_in_use", "gsv_total"], "title": "可见卫星数（GGA 参与数 vs GSV 总数）", "y_name": "卫星数"},
+    {"type": "nofix_timeline", "fields": ["is_nofix"], "title": "不定位历元时间线（1=不定位）", "y_name": "is_nofix"},
+    {"type": "bar", "fields": ["sv_in_use"], "title": "卫星数分布（柱状）"},
+    {"type": "pie", "fields": ["fix_quality"], "title": "定位质量占比（0=无效 1=单点 2=RTK）"},
+    {"type": "scatter", "x_field": "gsv_total", "y_field": "sv_in_use", "title": "GSV 总数 vs GGA 参与卫星数（散点）"},
+    {"type": "table", "fields": ["flashclkdrifft", "curclkdrifft", "recvclkdrifft", "sv_in_use"], "title": "统计汇总表"}
+  ],
+  "temp_csv": "",
+  "output_html": "综合分析报告.html",
+  "show_nofix_default": true
+}

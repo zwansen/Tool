@@ -1,0 +1,74 @@
+{
+  "sync": "AA4412",
+  "header": [
+    {"name": "sync", "type": "bytes", "length": 3},
+    {"name": "headerLength", "type": "UChar"},
+    {"name": "messageId", "type": "UShort"},
+    {"name": "RSV_6", "type": "Char"},
+    {"name": "port", "type": "UChar", "enum": "port"},
+    {"name": "messageLength", "type": "UShort"},
+    {"name": "sequence", "type": "UShort"},
+    {"name": "idleTime", "type": "UChar"},
+    {"name": "timeStatus", "type": "UChar", "enum": "timeStatus"},
+    {"name": "week", "type": "UShort"},
+    {"name": "msecond", "type": "ULong"},
+    {"name": "RSV_20", "type": "ULong"},
+    {"name": "outputDelay", "type": "UShort"},
+    {"name": "RSV_26", "type": "UShort"}
+  ],
+  "enums": {
+    "port": {
+      "32": "COM1",
+      "64": "COM2",
+      "96": "COM3",
+      "160": "COM4"
+    },
+    "timeStatus": {
+      "160": "Fine",
+      "20": "Unknown"
+    },
+    "solStatus": {
+      "0": {"name": "SOL_COMPUTED", "desc": "已解出"},
+      "1": {"name": "INSUFFICIENT_OBS", "desc": "观测量不足"},
+      "2": {"name": "NO_CONVERGENCE", "desc": "未收敛"},
+      "4": {"name": "COV_TRACE", "desc": "协方差矩阵的迹超过最大值（迹 > 1000 米）"}
+    },
+    "velType": {
+      "0": {"name": "NONE", "desc": "不进行解算"},
+      "1": {"name": "FIXEDPOS", "desc": "通过指令 KMDFIX 进行位置固定"},
+      "2": {"name": "FIXEDHEIGHT", "desc": "暂不支持"},
+      "3-7": {"name": "RSV", "desc": "保留"},
+      "8": {"name": "DOPPLER_VELOCITY", "desc": "利用实时多普勒计算速度"},
+      "9-15": {"name": "RSV", "desc": "保留"},
+      "16": {"name": "SINGLE", "desc": "单点定位"},
+      "17": {"name": "PSRDIFF", "desc": "伪距差分定位"},
+      "18": {"name": "SBAS", "desc": "加入 SBAS 改正的解"},
+      "32": {"name": "RSV", "desc": "保留"},
+      "33": {"name": "RSV", "desc": "保留"},
+      "34": {"name": "NARROW_FLOAT", "desc": "窄巷浮点解"},
+      "48": {"name": "RSV", "desc": "保留"},
+      "49": {"name": "WIDE_INT", "desc": "宽巷整数解"},
+      "50": {"name": "NARROW_INT", "desc": "窄巷整数解"},
+      "52": {"name": "INS", "desc": "纯惯导定位解算"},
+      "53": {"name": "INS_PSRSP", "desc": "惯导与单点定位组合解算"},
+      "54": {"name": "INS_PSRDIFF", "desc": "惯导与伪距差分组合解算"},
+      "55": {"name": "INS_RTKFLOAT", "desc": "惯导与载波相位差分浮点解组合解算"},
+      "56": {"name": "INS_RTKFIXED", "desc": "惯导与载波相位差分固定解组合解算"}
+    }
+  },
+  "messages": {
+    "100": {
+      "name": "PSRVEL",
+      "fields": [
+        {"name": "solStatus", "type": "Enum", "length": 4, "enum": "solStatus"},
+        {"name": "velType", "type": "Enum", "length": 4, "enum": "velType"},
+        {"name": "latency", "type": "Float"},
+        {"name": "age", "type": "Float"},
+        {"name": "horSpeed", "type": "Double"},
+        {"name": "trkGnd", "type": "Double"},
+        {"name": "vertSpeed", "type": "Double"},
+        {"name": "RSV", "type": "Float"}
+      ]
+    }
+  }
+}

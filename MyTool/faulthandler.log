@@ -1,0 +1,11 @@
+Windows fatal exception: code 0x8001010d
+
+Current thread 0x00006680 (most recent call first):
+  File "D:\Tool\MyTool\app\pages\page_ttff.py", line 241 in _on_browse
+  File "D:\Tool\MyTool\app\pages\page_ttff.py", line 170 in <lambda>
+  File "D:\Tool\MyTool\app\main_window.py", line 623 in main
+  File "D:\Tool\MyTool\launch_gui.py", line 50 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 98 in _run_module_code
+  File "<frozen runpy>", line 291 in run_path
+  File "D:\Tool\MyTool\\u542f\u52a8\u5de5\u5177\u7bb1.pyw", line 18 in <module>
